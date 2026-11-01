@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<!--
+  Assignment Cover Page Generator
+  Run: open this file in Chrome, Edge, Firefox or Safari. HTML, CSS and JavaScript are all inside this one file.
+  Save as PDF: fill the form -> "Print / Save as PDF" -> destination "Save as PDF", paper A4,
+  margins "None", "Headers and footers" off.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Assignment Cover Page Generator</title>
+  <style>
+/* ===== Assignment Cover Page Generator ===== */
+:root { --navy:#14305c; --ink:#1a1a1a; --muted:#5b6472; --rule:#cdd3dc; --bg:#e9ecf1; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.4 "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+/* ----- App layout (hidden when printing) ----- */
+.app { display:grid; grid-template-columns:minmax(300px, 400px) 1fr; min-height:100vh; }
+.panel { position:sticky; top:0; max-height:100vh; overflow-y:auto; padding:18px; background:#fff; border-right:1px solid var(--rule); }
+.panel h1 { margin:0 0 12px; font-size:18px; color:var(--navy); }
+fieldset { margin:0 0 12px; padding:6px 12px 12px; border:1px solid var(--rule); border-radius:6px; }
+legend { padding:0 6px; font-weight:600; color:var(--navy); }
+label { display:block; margin:10px 0 3px; font-size:13px; }
+label b { color:#b3261e; }
+input, select, textarea { width:100%; padding:8px; border:1px solid #8c95a3; border-radius:4px; font:inherit; background:#fff; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { outline:3px solid #6b9bff; outline-offset:1px; }
+button { padding:9px 12px; border:1px solid var(--navy); border-radius:4px; background:#fff; color:var(--navy); font:inherit; font-weight:600; cursor:pointer; }
+button.primary { background:var(--navy); color:#fff; }
+.btns { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 8px; }
+.hint { margin:6px 0 0; font-size:12.5px; color:var(--muted); }
+.warn { padding:8px 10px; border:1px solid #d99a2b; border-radius:4px; background:#fff4e0; font-size:13px; }
+.logo-row { display:flex; align-items:center; gap:10px; }
+.logo-row img { max-width:52px; max-height:52px; object-fit:contain; border:1px solid var(--rule); }
+#logoClear { margin-top:8px; }
+[hidden] { display:none !important; }
+
+/* ----- Preview: A4 page scaled to fit the screen via --s (set by the script) ----- */
+.stage { min-width:0; padding:20px 16px; overflow:auto; display:flex; justify-content:center; align-items:flex-start; }
+.scaler { flex:none; width:calc(210mm * var(--s, 1)); height:calc(297mm * var(--s, 1)); }
+@media (max-width:900px) {
+  .app { grid-template-columns:1fr; }
+  .panel { position:static; max-height:none; border-right:0; }
+}
+
+/* ===== Cover page: shared base (Classic Academic is the default look) ===== */
+.cover { width:210mm; height:297mm; padding:10mm; overflow:hidden; background:#fff; color:var(--ink);
+  font-family:Georgia, "Times New Roman", serif; box-shadow:0 2px 14px rgba(0,0,0,.2);
+  transform:scale(var(--s, 1)); transform-origin:top left; }
+.frame { height:100%; padding:12mm 15mm; display:flex; flex-direction:column; overflow:hidden; }
+.cover header { padding-bottom:6mm; text-align:center; border-bottom:1.5px solid var(--navy); }
+.logo { display:block; margin:0 auto 4mm; width:auto; height:auto; max-width:60mm; max-height:30mm; object-fit:contain; }
+.uni { margin:0; font-size:25pt; line-height:1.2; color:var(--navy); }
+.fac, .dep { margin:2mm 0 0; font-size:13pt; }
+.campus { margin:2mm 0 0; font-size:10.5pt; color:var(--muted); }
+.title-block { margin:9mm 0 7mm; text-align:center; }
+.kind { margin:0 0 4mm; font-size:19pt; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--navy); }
+.title { margin:0; font-size:21pt; line-height:1.25; }
+.course { margin:3mm 0 0; font-size:12.5pt; color:var(--muted); }
+.party { margin-bottom:6mm; }
+.party h3 { margin:0 0 3mm; padding-bottom:1.5mm; font-size:13pt; color:var(--navy); border-bottom:1px solid var(--rule); }
+.party dl { margin:0; display:grid; grid-template-columns:38mm 1fr; gap:1.5mm 4mm; font-size:11.5pt; }
+.party dt { color:var(--muted); }
+.party dd { margin:0; font-weight:600; }
+.party ul { margin:0; padding-left:5mm; font-size:11pt; line-height:1.5; }
+.notes { margin:0 0 4mm; font-size:10.5pt; font-style:italic; color:var(--muted); white-space:pre-line; }
+.cover footer { margin-top:auto; padding-top:4mm; text-align:center; font-size:12pt; border-top:1px solid var(--rule); }
+.empty { margin:110mm 20mm 0; text-align:center; font:14pt/1.5 "Segoe UI", Arial, sans-serif; color:var(--muted); }
+
+/* ===== Template 1: Classic Academic (double rule frame, serif) ===== */
+.t-classic .frame { border:3px double var(--navy); }
+
+/* ===== Template 2: Modern Minimalist (sans-serif, accent bar, light panels) ===== */
+.t-modern { font-family:"Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+.t-modern .frame { border-left:3mm solid var(--navy); padding-left:14mm; }
+.t-modern header { border-bottom:0; }
+.t-modern .uni { font-weight:600; }
+.t-modern .kind { font-size:14pt; font-weight:500; letter-spacing:5px; color:var(--muted); }
+.t-modern .party { padding:4mm 5mm; background:#f3f5f8; }
+.t-modern .party h3 { border-bottom:0; padding-bottom:0; }
+
+/* ===== Template 3: Formal Corporate (navy bars, section strips) ===== */
+.t-corp { padding:0; font-family:Arial, Helvetica, sans-serif; }
+.t-corp .frame { padding:12mm 16mm; border-top:8mm solid var(--navy); border-bottom:8mm solid var(--navy); }
+.t-corp .kind { display:inline-block; padding:1.5mm 6mm; font-size:15pt; border:1.5px solid var(--navy); }
+.t-corp .party h3 { padding:1.5mm 3mm; font-size:11pt; letter-spacing:.5px; color:#fff; background:var(--navy); border-bottom:0; }
+
+/* ===== Print: A4 portrait, cover only ===== */
+@page { size:A4 portrait; margin:0; }
+@media print {
+  html, body { height:auto; margin:0; background:#fff; }
+  .no-print { display:none !important; }
+  .app, .stage { display:block; padding:0; overflow:visible; }
+  .scaler { --s:1 !important; width:210mm; height:296mm; }
+  .cover { height:296mm; box-shadow:none; transform:none; break-inside:avoid; }
+  * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="panel no-print">
+    <h1>Assignment Cover Page Generator</h1>
+    <form id="form">
+      <fieldset>
+        <legend>Design and logo</legend>
+        <label for="template">Template</label>
+        <select id="template">
+          <option value="t-classic">Classic Academic</option>
+          <option value="t-modern">Modern Minimalist</option>
+          <option value="t-corp">Formal Corporate</option>
+        </select>
+        <label for="logo">University logo (PNG, JPG, SVG or WebP, up to 2 MB)</label>
+        <div class="logo-row">
+          <input type="file" id="logo" accept="image/png,image/jpeg,image/svg+xml,image/webp">
+          <img id="logoThumb" alt="Logo preview" hidden>
+        </div>
+        <button type="button" id="logoClear" hidden>Remove logo</button>
+        <p class="hint" id="logoMsg" role="status"></p>
+      </fieldset>
+      <div id="fields"></div>
+    </form>
+    <datalist id="types">
+      <option value="Individual Assignment"><option value="Group Assignment">
+      <option value="Report"><option value="Case Study"><option value="Term Paper">
+    </datalist>
+    <div class="btns">
+      <button type="button" class="primary" id="print">Print / Save as PDF</button>
+      <button type="button" id="download">Download as HTML</button>
+      <button type="button" id="sample">Load Sample Data</button>
+      <button type="button" id="reset">Reset Form</button>
+    </div>
+    <p class="hint" id="status" role="status">Fields marked * are required. Empty optional fields are left out of the cover page.</p>
+    <p class="warn" id="warn" role="alert" hidden>This cover is taller than one A4 page. Shorten long text or clear optional fields.</p>
+  </aside>
+
+  <main class="stage" id="stage">
+    <div class="scaler" id="scaler">
+      <article class="cover t-classic" id="cover" aria-label="Cover page preview"></article>
+    </div>
+  </main>
+</div>
+<script>
+/* Assignment Cover Page Generator: vanilla JS, no dependencies, no network. */
+'use strict';
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- 1. Field definitions (drive the form, sample data and validation) ---------- */
+const GROUPS = {uni:'University information', asg:'Assignment information', to:'Submitted to', by:'Submitted by', opt:'Optional information'};
+const FIELDS = [
+  {id:'uniName', g:'uni', l:'University name', req:1, s:'University of Dhaka'},
+  {id:'faculty', g:'uni', l:'Faculty', s:'Faculty of Business Studies'},
+  {id:'dept',    g:'uni', l:'Department', req:1, s:'Department of Marketing'},
+  {id:'campus',  g:'uni', l:'Campus or address', s:'Dhaka, Bangladesh'},
+  {id:'title',   g:'asg', l:'Assignment title', req:1, s:'Consumer Behaviour Analysis of Online Fashion Shoppers'},
+  {id:'course',  g:'asg', l:'Course title', req:1, s:'Consumer Behaviour'},
+  {id:'code',    g:'asg', l:'Course code', req:1, s:'MKT 301'},
+  {id:'type',    g:'asg', l:'Assignment type', list:'types', ph:'Assignment', s:'Individual Assignment'},
+  {id:'date',    g:'asg', l:'Submission date', type:'date', req:1, s:'2026-10-27'},
+  {id:'tName',   g:'to',  l:"Teacher's full name", req:1, s:'Dr. Nusrat Jahan'},
+  {id:'tDesig',  g:'to',  l:'Designation', s:'Associate Professor'},
+  {id:'tDept',   g:'to',  l:'Department', s:'Department of Marketing'},
+  {id:'tInst',   g:'to',  l:'Faculty or institution', s:'University of Dhaka'},
+  {id:'sName',   g:'by',  l:"Student's full name", req:1, s:'Tahmid Karim'},
+  {id:'sId',     g:'by',  l:'Student ID', req:1, s:'2026-0451'},
+  {id:'program', g:'by',  l:'Degree / program', req:1, s:'BBA (Honours) in Marketing'},
+  {id:'sDept',   g:'by',  l:'Department', s:'Department of Marketing'},
+  {id:'sFac',    g:'by',  l:'Faculty', s:'Faculty of Business Studies'},
+  {id:'session', g:'by',  l:'Academic session', s:'2025–2026'},
+  {id:'term',    g:'by',  l:'Semester or year', s:'3rd Year, Semester 1'},
+  {id:'section', g:'by',  l:'Section or group', s:'Section A'},
+  {id:'members', g:'opt', l:'Group members and IDs (one per line)', area:1, ph:'Name – ID'},
+  {id:'notes',   g:'opt', l:'Additional notes', area:1}
+];
+const LOGO_TYPES = ['image/png', 'image/jpeg', 'image/svg+xml', 'image/webp'];
+const SAMPLE_LOGO = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120"><path d="M8 8h84v58c0 28-24 42-42 50C32 108 8 94 8 66z" fill="#14305c"/>' +
+  '<path d="M50 30l30 14-30 14-30-14z" fill="#fff"/><path d="M32 54v14c0 6 36 6 36 0V54l-18 8z" fill="#fff"/></svg>');
+
+const state = {logo: ''};
+const els = {};
+const form = $('form'), cover = $('cover'), sel = $('template'), stage = $('stage'), scaler = $('scaler');
+
+/* ---------- 2. Build the form from FIELDS ---------- */
+function buildForm() {
+  for (const [g, title] of Object.entries(GROUPS)) {
+    const fs = document.createElement('fieldset');
+    fs.innerHTML = `<legend>${title}</legend>` + FIELDS.filter(f => f.g === g).map(f => {
+      const attrs = `id="f-${f.id}" autocomplete="off" placeholder="${f.ph || 'e.g. ' + (f.s || '')}"` +
+        (f.req ? ' required' : '') + (f.list ? ` list="${f.list}"` : '');
+      return `<label for="f-${f.id}">${f.l}${f.req ? ' <b aria-hidden="true">*</b>' : ' <small>(optional)</small>'}</label>` +
+        (f.area ? `<textarea ${attrs} rows="3"></textarea>` : `<input type="${f.type || 'text'}" ${attrs}>`);
+    }).join('');
+    $('fields').appendChild(fs);
+  }
+  FIELDS.forEach(f => { els[f.id] = $('f-' + f.id); });
+}
+
+/* ---------- 3. Render the cover page (empty values are never printed) ---------- */
+const v = id => els[id].value.trim();
+const tag = (t, c, s) => s ? `<${t} class="${c}">${esc(s)}</${t}>` : '';
+const longDate = s => {
+  const d = new Date(s + 'T00:00:00');
+  return s && !isNaN(d) ? d.toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'}) : '';
+};
+const party = (heading, rows) => {
+  const r = rows.filter(x => x[1]).map(([k, val]) => `<dt>${k}</dt><dd>${esc(val)}</dd>`).join('');
+  return r ? `<section class="party"><h3>${heading}</h3><dl>${r}</dl></section>` : '';
+};
+
+function render() {
+  cover.className = 'cover ' + sel.value;                       // template switch
+  if (!FIELDS.some(f => v(f.id)) && !state.logo) {              // nothing entered yet
+    cover.innerHTML = '<p class="empty">Fill in the form, or tap “Load Sample Data”, to preview your cover page.</p>';
+    $('warn').hidden = true;
+    return;
+  }
+  const members = v('members').split('\n').map(s => s.trim()).filter(Boolean);
+  const date = longDate(v('date'));
+  cover.innerHTML = `<div class="frame">
+    <header>${state.logo ? `<img class="logo" src="${state.logo}" alt="University logo">` : ''}${tag('h1', 'uni', v('uniName'))}${tag('p', 'fac', v('faculty'))}${tag('p', 'dep', v('dept'))}${tag('p', 'campus', v('campus'))}</header>
+    <section class="title-block"><p class="kind">${esc(v('type') || 'Assignment')}</p>${tag('h2', 'title', v('title'))}${tag('p', 'course', v('course') && 'Course Title: ' + v('course'))}${tag('p', 'course', v('code') && 'Course Code: ' + v('code'))}</section>
+    ${party('Submitted To', [['Name', v('tName')], ['Designation', v('tDesig')], ['Department', v('tDept')], ['Institution', v('tInst')]])}
+    ${party('Submitted By', [['Name', v('sName')], ['Student ID', v('sId')], ['Program', v('program')], ['Department', v('sDept')], ['Faculty', v('sFac')], ['Session', v('session')], ['Semester / Year', v('term')], ['Section / Group', v('section')]])}
+    ${members.length ? `<section class="party"><h3>Group Members</h3><ul>${members.map(m => `<li>${esc(m)}</li>`).join('')}</ul></section>` : ''}
+    ${tag('p', 'notes', v('notes'))}
+    ${date ? `<footer>Submission Date: ${esc(date)}</footer>` : ''}</div>`;
+  const fr = cover.firstElementChild;                           // warn if content spills past one A4 page
+  $('warn').hidden = fr.scrollHeight <= fr.clientHeight + 1;
+}
+
+/* ---------- 4. Preview scaling: keeps the A4 page intact on small screens ---------- */
+function fitPreview() {
+  const full = 210 * 96 / 25.4;                                 // A4 width in CSS px
+  scaler.style.setProperty('--s', Math.max(0.2, Math.min(1, (stage.clientWidth - 32) / full)));
+}
+
+/* ---------- 5. Logo upload ---------- */
+function setLogo(src) {
+  state.logo = src;
+  $('logoThumb').src = src || '';
+  $('logoThumb').hidden = $('logoClear').hidden = !src;
+  render();
+}
+function logoError(msg) { $('logoMsg').textContent = msg; $('logo').value = ''; }
+
+$('logo').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (!LOGO_TYPES.includes(f.type)) return logoError('Unsupported file. Use PNG, JPG, SVG or WebP.');
+  if (f.size > 2 * 1024 * 1024) return logoError('That logo is larger than 2 MB. Use a smaller image.');
+  const r = new FileReader();
+  r.onload = () => { $('logoMsg').textContent = f.name; setLogo(r.result); };
+  r.onerror = () => logoError('Could not read that file. Try another image.');
+  r.readAsDataURL(f);
+});
+$('logoClear').addEventListener('click', () => { $('logo').value = ''; $('logoMsg').textContent = ''; setLogo(''); });
+
+/* ---------- 6. Actions ---------- */
+const isValid = () => form.checkValidity() || (form.reportValidity(), false);
+const fileTitle = () => [v('sName'), v('code'), v('type') || 'Assignment'].filter(Boolean).join(' - ');
+
+$('print').addEventListener('click', () => {
+  if (!isValid()) return;
+  const old = document.title;
+  document.title = fileTitle();                                 // becomes the default PDF file name
+  window.print();
+  document.title = old;
+});
+
+$('download').addEventListener('click', () => {
+  if (!isValid()) return;
+  const css = document.querySelector('style').textContent;   // this file's own stylesheet
+  const page = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>${esc(fileTitle())}</title>` +
+    `<style>${css}</style>` +
+    `</head><body><div class="scaler" style="--s:1;margin:16px auto">${cover.outerHTML}</div></body></html>`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([page], {type: 'text/html'}));
+  a.download = 'cover-page.html';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  $('status').textContent = 'Downloaded cover-page.html.';
+});
+
+$('sample').addEventListener('click', () => {
+  FIELDS.forEach(f => { els[f.id].value = f.s || ''; });
+  setLogo(state.logo || SAMPLE_LOGO);                           // keep a logo the user already uploaded
+});
+
+$('reset').addEventListener('click', () => {
+  form.reset();                                                 // clears fields and template choice
+  $('logo').value = ''; $('logoMsg').textContent = '';
+  setLogo('');
+});
+
+/* ---------- 7. Start-up ---------- */
+buildForm();
+form.addEventListener('input', render);
+form.addEventListener('submit', e => e.preventDefault());
+window.addEventListener('resize', fitPreview);
+if ('ResizeObserver' in window) new ResizeObserver(fitPreview).observe(stage);
+render();
+fitPreview();
+</script>
+</body>
+</html>
